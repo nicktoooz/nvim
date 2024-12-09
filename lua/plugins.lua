@@ -11,7 +11,7 @@ if fn.empty(fn.glob(install_path)) > 0 then
 		"https://github.com/wbthomason/packer.nvim",
 		install_path,
 	})
-	print("Installing packer close and reopen Neovim...")
+	print("Installing packer, close and reopen Neovim...")
 	vim.cmd([[packadd packer.nvim]])
 end
 
@@ -40,14 +40,33 @@ packer.init({
 
 -- Install your plugins here
 return packer.startup(function(use)
-	use("wbthomason/packer.nvim") -- Have packer manage itself
-	-- use ("nvim-tree/nvim-tree.lua")
-	use("nvim-tree/nvim-web-devicons")
+	-- Packer can manage itself
+	use("wbthomason/packer.nvim")
+	-- Essential plugins you want to keep
+	use("nvim-tree/nvim-web-devicons") -- Web dev icons
+	use("nvim-telescope/telescope.nvim") -- Telescope for fuzzy finding
+	use("nvim-lua/plenary.nvim") -- Common utilities for plugins
+	use("m4xshen/autoclose.nvim") -- Autoclose plugin for brackets/parentheses
+	use("MunifTanjim/nui.nvim") -- UI components for Neovim
+
+	-- Mason-related plugins
+	use("williamboman/mason.nvim") -- Mason for LSP installation
+	use("WhoIsSethDaniel/mason-tool-installer.nvim") -- Tool installer for Mason
+	use("williamboman/mason-lspconfig.nvim") -- Integrate Mason with LSPconfig
+
+	-- LSP related
+	use("neovim/nvim-lspconfig") -- LSP configurations
+	use("stevearc/conform.nvim") -- LSP completion (optional, but you mentioned it)
+
+	-- Additional plugins you specified
+	use("xiyaowong/transparent.nvim") -- Transparent background plugin
+
+	-- Treesitter for better syntax highlighting and other features
 	use("nvim-treesitter/nvim-treesitter")
-	use("nvim-telescope/telescope.nvim")
-	use("nvim-lua/plenary.nvim")
-	use("m4xshen/autoclose.nvim")
-	use("MunifTanjim/nui.nvim")
+
+	-- Onedark theme plugin
+	use("navarasu/onedark.nvim")
+
 	use({
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
@@ -99,6 +118,48 @@ return packer.startup(function(use)
 				--           return a.type > b.type
 				--       end
 				--   end , -- this sorts files and directories descendantly
+
+				event_handlers = {
+					{
+						event = "file_opened",
+						handler = function(file_path)
+							local non_editable_extensions = {
+								"png",
+								"jpg",
+								"jpeg",
+								"gif",
+								"svg",
+								"pdf",
+								"exe",
+								"bin",
+								"dll",
+								"zip",
+								"tar",
+								"gz",
+								"rar",
+								"iso",
+								"mp3",
+								"wav",
+								"flac",
+								"mp4",
+								"mkv",
+								"avi",
+								"ttf",
+								"otf",
+								"deb",
+								"appImage",
+							}
+
+							local ext = file_path:match("^.+%.(.+)$")
+
+							if ext and vim.tbl_contains(non_editable_extensions, ext) then
+								vim.fn.jobstart({ "xdg-open", file_path }, { detach = true })
+								vim.cmd("bd!")
+							end
+						end,
+					},
+				},
+
 				default_component_configs = {
 					container = {
 						enable_character_fade = true,
@@ -171,10 +232,6 @@ return packer.startup(function(use)
 						enabled = false,
 					},
 				},
-				-- A list of functions, each representing a global custom command
-				-- that will be available in all sources (if not overridden in `opts[source_name].commands`)
-				-- see `:h neo-tree-custom-commands-global`
-				commands = {},
 				window = {
 					position = "left",
 					width = 40,
@@ -358,24 +415,21 @@ return packer.startup(function(use)
 		end,
 	})
 
-	use("williamboman/mason.nvim")
-	use("WhoIsSethDaniel/mason-tool-installer.nvim")
-	use("williamboman/mason-lspconfig.nvim")
-	use("neovim/nvim-lspconfig")
-	use("stevearc/conform.nvim")
+	-- Diagnostic plugin
+	use({ "folke/lsp-trouble.nvim" }) -- Optional, but useful for diagnostics
 
-	use("xiyaowong/transparent.nvim")
+	use({
+		"hrsh7th/nvim-cmp", -- nvim-cmp completion plugin
+		"hrsh7th/cmp-nvim-lsp", -- LSP source for nvim-cmp
+		"hrsh7th/cmp-buffer", -- Buffer source for nvim-cmp
+		"hrsh7th/cmp-path", -- Path source for nvim-cmp
+		"saadparwaiz1/cmp_luasnip", -- LuaSnip source for nvim-cmp
+		"L3MON4D3/LuaSnip", -- Snippet engine
+		"hrsh7th/cmp-cmdline",
+	})
 
-	use("navarasu/onedark.nvim")
-	use("hrsh7th/cmp-buffer")
-	use("hrsh7th/cmp-path")
-	use("hrsh7th/cmp-cmdline")
-	use("hrsh7th/nvim-cmp")
-
-	use("hrsh7th/cmp-vsnip")
-	use("hrsh7th/vim-vsnip")
-	use("rafamadriz/friendly-snippets")
-
+	use("CRAG666/code_runner.nvim")
+	-- Automatically set up the configuration if Packer was just installed
 	if PACKER_BOOTSTRAP then
 		require("packer").sync()
 	end
