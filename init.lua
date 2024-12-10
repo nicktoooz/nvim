@@ -279,13 +279,6 @@ vim.api.nvim_set_keymap("n", "<leader><Right>", ":vertical resize +2<CR>", { nor
 vim.api.nvim_set_keymap("n", "<leader><Up>", ":resize -2<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader><Down>", ":resize +2<CR>", { noremap = true, silent = true })
 
-vim.api.nvim_set_keymap(
-	"n",
-	"<Leader>t",
-	":lua require('ide.components.terminal').toggle()<CR>",
-	{ noremap = true, silent = true }
-)
-
 vim.keymap.set("n", "<leader>r", ":RunCode<CR>", { noremap = true, silent = false })
 vim.keymap.set("n", "<leader>rf", ":RunFile<CR>", { noremap = true, silent = false })
 vim.keymap.set("n", "<leader>rft", ":RunFile tab<CR>", { noremap = true, silent = false })
@@ -304,6 +297,7 @@ require("nvim-treesitter.configs").setup({
 	auto_install = true,
 })
 
+require("flutter-tools").setup({})
 -- Enable LSP debug logs
 vim.lsp.set_log_level("debug")
 

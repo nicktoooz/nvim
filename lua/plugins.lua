@@ -417,7 +417,7 @@ return packer.startup(function(use)
 
 	-- Diagnostic plugin
 	use({ "folke/lsp-trouble.nvim" }) -- Optional, but useful for diagnostics
-
+	use({ "stevearc/dressing.nvim" })
 	use({
 		"hrsh7th/nvim-cmp", -- nvim-cmp completion plugin
 		"hrsh7th/cmp-nvim-lsp", -- LSP source for nvim-cmp
@@ -427,9 +427,17 @@ return packer.startup(function(use)
 		"L3MON4D3/LuaSnip", -- Snippet engine
 		"hrsh7th/cmp-cmdline",
 	})
-
+	use("rebelot/terminal.nvim")
 	use("CRAG666/code_runner.nvim")
 	-- Automatically set up the configuration if Packer was just installed
+	use({
+		"akinsho/flutter-tools.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"stevearc/dressing.nvim",
+		},
+		config = true,
+	})
 	if PACKER_BOOTSTRAP then
 		require("packer").sync()
 	end
