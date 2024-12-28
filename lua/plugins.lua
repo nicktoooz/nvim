@@ -473,6 +473,13 @@ return packer.startup(function(use)
 	use("xiyaowong/transparent.nvim")
 	-- Automatically set up the configuration if Packer was just installed
 
+	use({
+		"numToStr/Comment.nvim",
+		config = function()
+			require("Comment").setup()
+		end,
+	})
+
 	use("mattn/emmet-vim")
 
 	use({

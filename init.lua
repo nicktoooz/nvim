@@ -400,6 +400,21 @@ vim.keymap.set("n", "<leader>rc", ":RunClose<CR>", { noremap = true, silent = fa
 vim.keymap.set("n", "<leader>crf", ":CRFiletype<CR>", { noremap = true, silent = false })
 vim.keymap.set("n", "<leader>crp", ":CRProjects<CR>", { noremap = true, silent = false })
 
+-- Comment.nvim
+-- Bind Ctrl+, to toggle comment using Comment.nvim
+vim.api.nvim_set_keymap(
+	"n",
+	"<C-,>",
+	':lua require("Comment.api").toggle.linewise.current()<CR>',
+	{ noremap = true, silent = true }
+)
+vim.api.nvim_set_keymap(
+	"v",
+	"<C-,>",
+	':lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>',
+	{ noremap = true, silent = true }
+)
+
 -- Treesitter setup
 require("nvim-treesitter.configs").setup({
 	highlight = {
