@@ -404,13 +404,13 @@ vim.keymap.set("n", "<leader>crp", ":CRProjects<CR>", { noremap = true, silent =
 -- Bind Ctrl+, to toggle comment using Comment.nvim
 vim.api.nvim_set_keymap(
 	"n",
-	"<C-,>",
+	"<C-/>",
 	':lua require("Comment.api").toggle.linewise.current()<CR>',
 	{ noremap = true, silent = true }
 )
 vim.api.nvim_set_keymap(
 	"v",
-	"<C-,>",
+	"<C-/>",
 	':lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>',
 	{ noremap = true, silent = true }
 )
