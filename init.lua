@@ -3,7 +3,7 @@ require("plugins")
 
 -- OneDark theme setup
 require("onedark").load()
-
+require("transparent").setup({})
 -- Auto-close and Transparent settings
 require("autoclose").setup()
 require("transparent").setup({
@@ -59,6 +59,7 @@ vim.o.shiftwidth = 4 -- Number of spaces to use for autoindent
 vim.o.expandtab = true -- Use spaces instead of tabs
 -- Display settings
 vim.o.number = true -- Show line numbers
+vim.opt.swapfile = false
 
 -- LSP Setup for lua, typescript, python, java, csharp, kotlin
 local lspconfig = require("lspconfig")
@@ -126,7 +127,7 @@ lspconfig.omnisharp.setup({
 })
 
 -- Kotlin LSP (kotlin-language-server)
-lspconfig.kotlin_language_server.setup({
+lspconfig.intelephense.setup({
 	capabilities = capabilities,
 	on_attach = function(client, bufnr)
 		local map = function(mode, lhs, rhs)
@@ -139,6 +140,79 @@ lspconfig.kotlin_language_server.setup({
 	end,
 })
 
+local configs = require("lspconfig.configs")
+
+--if not configs.ls_emmet then
+--	configs.ls_emmet = {
+--		default_config = {
+--			cmd = { "ls_emmet", "--stdio" },
+--			filetypes = {
+--				"html",
+--				"css",
+--				"scss",
+--				"javascriptreact",
+--				"typescriptreact",
+--				"haml",
+--				"xml",
+--				"xsl",
+--				"pug",
+--				"slim",
+--				"sass",
+--				"stylus",
+--				"less",
+--				"sss",
+--				"hbs",
+--				"blade",
+--				"handlebars",
+--			},
+--			root_dir = function(fname)
+--				return vim.loop.cwd()
+--			end,
+--			settings = {},
+--		},
+--	}
+--end
+--
+--lspconfig.ls_emmet.setup({ capabilities = capabilities })
+
+lspconfig.emmet_language_server.setup({
+	filetypes = {
+		"css",
+		"eruby",
+		"html",
+		"javascript",
+		"javascriptreact",
+		"less",
+		"sass",
+		"scss",
+		"pug",
+		"blade",
+		"typescriptreact",
+	},
+	-- Read more about this options in the [vscode docs](https://code.visualstudio.com/docs/editor/emmet#_emmet-configuration).
+	-- **Note:** only the options listed in the table are supported.
+	init_options = {
+		---@type table<string, string>
+		includeLanguages = {},
+		--- @type string[]
+		excludeLanguages = {},
+		--- @type string[]
+		extensionsPath = {},
+		--- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/preferences/)
+		preferences = {},
+		--- @type boolean Defaults to `true`
+		showAbbreviationSuggestions = true,
+		--- @type "always" | "never" Defaults to `"always"`
+		showExpandedAbbreviation = "always",
+		--- @type boolean Defaults to `false`
+		showSuggestionsAsSnippets = false,
+		--- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/syntax-profiles/)
+		syntaxProfiles = {},
+		--- @type table<string, string> [Emmet Docs](https://docs.emmet.io/customization/snippets/#variables)
+		variables = {},
+	},
+})
+
 -- nvim-cmp setup
 local cmp = require("cmp")
 
@@ -149,10 +223,10 @@ cmp.setup({
 		end,
 	},
 	mapping = {
-		["<C-p>"] = cmp.mapping.select_prev_item(),
-		["<C-n>"] = cmp.mapping.select_next_item(),
-		["<C-d>"] = cmp.mapping.scroll_docs(-4),
-		["<C-u>"] = cmp.mapping.scroll_docs(4),
+		["<C-Down>"] = cmp.mapping.select_next_item(), -- Move to next suggestion
+		["<C-Up>"] = cmp.mapping.select_prev_item(), -- Move to previous suggestion
+		["<C-d>"] = cmp.mapping.scroll_docs(-4), -- Scroll documentation up
+		["<C-f>"] = cmp.mapping.scroll_docs(4), -- Scroll documentation down
 		["<C-Space>"] = cmp.mapping.complete(),
 		["<C-e>"] = cmp.mapping.close(),
 		["<CR>"] = cmp.mapping.confirm({ select = true }),
@@ -165,9 +239,47 @@ cmp.setup({
 	},
 })
 
+local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+parser_config.blade = {
+	install_info = {
+		url = "https://github.com/EmranMR/tree-sitter-blade",
+		files = { "src/parser.c" },
+		branch = "main",
+	},
+	filetype = "blade",
+}
+
+vim.filetype.add({
+	pattern = {
+		[".*%.blade%.php"] = "blade",
+	},
+})
+
+-- Custom indentation settings for Blade files
+vim.cmd([[
+  augroup BladeIndentation
+    autocmd!
+    autocmd FileType html,blade setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+  augroup END
+]])
+
 vim.api.nvim_create_autocmd("VimEnter", {
 	callback = function()
 		vim.cmd("Neotree") -- Toggles the NeoTree window
+		vim.cmd("TransparentEnable")
+	end,
+})
+
+-- Autosave
+vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "VimLeavePre" }, {
+	callback = function(event)
+		if vim.api.nvim_buf_get_option(event.buf, "modified") then
+			vim.schedule(function()
+				vim.api.nvim_buf_call(event.buf, function()
+					vim.cmd("silent! write")
+				end)
+			end)
+		end
 	end,
 })
 
@@ -203,6 +315,7 @@ require("conform").setup({
 		css = { "prettierd", "prettier" },
 		scss = { "prettierd", "prettier" },
 		php = { "phpcbf" },
+		blade = { "blade-formatter" },
 	},
 	format_on_save = {
 		timeout_ms = 500,

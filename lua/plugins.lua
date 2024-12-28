@@ -232,6 +232,7 @@ return packer.startup(function(use)
 						enabled = false,
 					},
 				},
+
 				window = {
 					position = "left",
 					width = 40,
@@ -427,16 +428,59 @@ return packer.startup(function(use)
 		"L3MON4D3/LuaSnip", -- Snippet engine
 		"hrsh7th/cmp-cmdline",
 	})
+
+	use({
+		"xiyaowong/transparent.nvim",
+		lazy = false, --this was SUPER IMPORTANT
+		config = function()
+			require("transparent").setup({ -- Optional, you don't have to run setup.
+				groups = { -- table: default groups
+					"Normal",
+					"NormalNC",
+					"Comment",
+					"Constant",
+					"Special",
+					"Identifier",
+					"Statement",
+					"PreProc",
+					"Type",
+					"Underlined",
+					"Todo",
+					"String",
+					"Function",
+					"Conditional",
+					"Repeat",
+					"Operator",
+					"Structure",
+					"LineNr",
+					"NonText",
+					"SignColumn",
+					"CursorLine",
+					"CursorLineNr",
+					"StatusLine",
+					"StatusLineNC",
+					"EndOfBuffer",
+				},
+				extra_groups = { "NeoTreeNormal", "NeoTreeNormalNC" }, -- and this was super important as well
+				exclude_groups = {}, -- table: groups you don't want to clear
+			})
+		end,
+	})
+
 	use("rebelot/terminal.nvim")
 	use("CRAG666/code_runner.nvim")
+	-- use("jwalton512/vim-blade")
+	use("xiyaowong/transparent.nvim")
 	-- Automatically set up the configuration if Packer was just installed
+
+	use("mattn/emmet-vim")
+
 	use({
 		"akinsho/flutter-tools.nvim",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"stevearc/dressing.nvim",
 		},
-		config = true,
 	})
 	if PACKER_BOOTSTRAP then
 		require("packer").sync()
