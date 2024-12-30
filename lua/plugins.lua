@@ -55,7 +55,9 @@ return packer.startup(function(use)
 	use("williamboman/mason-lspconfig.nvim") -- Integrate Mason with LSPconfig
 
 	-- LSP related
-	use("neovim/nvim-lspconfig") -- LSP configurations
+	use("neovim/nvim-lspconfig")
+
+	-- LSP configurations
 	use("stevearc/conform.nvim") -- LSP completion (optional, but you mentioned it)
 
 	-- Additional plugins you specified

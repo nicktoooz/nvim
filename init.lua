@@ -1,3 +1,4 @@
+vim.opt.termguicolors = true
 -- Load required plugins
 require("plugins")
 
@@ -67,15 +68,45 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true -- Enable snippet support
 
 -- Lua LSP
-lspconfig.lua_ls.setup({
-	capabilities = capabilities,
-})
+require("lspconfig").lua_ls.setup({
+	on_init = function(client)
+		if client.workspace_folders then
+			local path = client.workspace_folders[1].name
+			if vim.loop.fs_stat(path .. "/.luarc.json") or vim.loop.fs_stat(path .. "/.luarc.jsonc") then
+				return
+			end
+		end
 
+		client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+			runtime = {
+				-- Tell the language server which version of Lua you're using
+				-- (most likely LuaJIT in the case of Neovim)
+				version = "LuaJIT",
+			},
+			-- Make the server aware of Neovim runtime files
+			workspace = {
+				checkThirdParty = false,
+				library = {
+					vim.env.VIMRUNTIME,
+					-- Depending on the usage, you might want to add additional paths here.
+					-- "${3rd}/luv/library"
+					-- "${3rd}/busted/library",
+				},
+				-- or pull in all of 'runtimepath'. NOTE: this is a lot slower and will cause issues when working on your own configuration (see https://github.com/neovim/nvim-lspconfig/issues/3189)
+				-- library = vim.api.nvim_get_runtime_file("", true)
+			},
+		})
+	end,
+	settings = {
+		Lua = {},
+	},
+})
 -- TypeScript/JavaScript LSP (ts_ls)
 lspconfig.ts_ls.setup({
 	capabilities = capabilities,
 })
 
+lspconfig.tailwindcss.setup({})
 -- Python LSP (pyright)
 lspconfig.pyright.setup({
 	capabilities = capabilities,
@@ -304,21 +335,21 @@ cmp.setup.cmdline(":", {
 require("conform").setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
-		javascript = { "prettierd", "prettier" },
-		typescript = { "prettierd", "prettier" },
-		javascriptreact = { "prettierd", "prettier" },
-		typescriptreact = { "prettierd", "prettier" },
-		json = { "prettierd", "prettier" },
+		javascript = { "prettierd" },
+		typescript = { "prettierd" },
+		javascriptreact = { "prettierd" },
+		typescriptreact = { "prettierd" },
+		json = { "prettierd" },
 		java = { "google-java-format" },
 		kotlin = { "ktlint" },
 		html = { "prettier" },
-		css = { "prettierd", "prettier" },
-		scss = { "prettierd", "prettier" },
+		css = { "prettierd" },
+		scss = { "prettierd" },
 		php = { "phpcbf" },
 		blade = { "blade-formatter" },
 	},
 	format_on_save = {
-		timeout_ms = 500,
+		timeout_ms = 2000,
 		lsp_fallback = true,
 	},
 })
