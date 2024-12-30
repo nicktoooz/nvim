@@ -1,4 +1,3 @@
-vim.opt.termguicolors = true
 -- Load required plugins
 require("plugins")
 
@@ -61,7 +60,8 @@ vim.o.expandtab = true -- Use spaces instead of tabs
 -- Display settings
 vim.o.number = true -- Show line numbers
 vim.opt.swapfile = false
-
+vim.opt.wrap = false
+vim.opt.termguicolors = true
 -- LSP Setup for lua, typescript, python, java, csharp, kotlin
 local lspconfig = require("lspconfig")
 local capabilities = vim.lsp.protocol.make_client_capabilities()

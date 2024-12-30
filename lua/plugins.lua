@@ -469,6 +469,24 @@ return packer.startup(function(use)
 		end,
 	})
 
+	use({
+		"catgoose/nvim-colorizer.lua",
+		event = "BufReadPre",
+		config = function()
+			require("colorizer").setup({
+				user_default_options = {
+					tailwind = true, -- Ensure TailwindCSS class support is enabled
+					mode = "virtualtext",
+					virtualtext = "■",
+					-- Display virtualtext inline with color
+					virtualtext_inline = true,
+					-- Virtualtext highlight mode: 'background'|'foreground'
+					virtualtext_mode = "foreground",
+				},
+			})
+		end,
+	})
+
 	use("rebelot/terminal.nvim")
 	use("CRAG666/code_runner.nvim")
 	-- use("jwalton512/vim-blade")
