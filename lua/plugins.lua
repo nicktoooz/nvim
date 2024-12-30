@@ -488,7 +488,6 @@ return packer.startup(function(use)
 	})
 
 	use("rebelot/terminal.nvim")
-	use("CRAG666/code_runner.nvim")
 	-- use("jwalton512/vim-blade")
 	use("xiyaowong/transparent.nvim")
 	-- Automatically set up the configuration if Packer was just installed
